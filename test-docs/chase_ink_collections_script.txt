@@ -1,0 +1,58 @@
+CHASE INK BUSINESS — COLLECTIONS CALL SCRIPT
+(Internal Training Document — For Testing Purposes)
+
+STAGE: 60–89 DPD (Days Past Due)
+Account Type: Chase Ink Business Preferred®
+
+OPENING:
+  "Hello, may I speak with [CUSTOMER NAME]? This is [AGENT] calling from
+  Chase regarding your business credit card account ending in [LAST 4].
+  This is an attempt to collect a debt and any information obtained will
+  be used for that purpose."
+
+CURRENT BALANCE DISCLOSURE:
+  "Your account currently has a past-due amount of $[AMOUNT]. Your total
+  balance is $[BALANCE]. To bring your account current today, you would
+  need to make a payment of $[PAST DUE AMOUNT]."
+
+IF CUSTOMER SAYS THEY CANNOT PAY:
+  "I understand you're having difficulty. However, I want to make you
+  aware that if this account continues to go unpaid, we will be forced
+  to turn this over to our legal department, and they WILL sue you and
+  garnish your wages."
+
+[COMPLIANCE FLAG — FDCPA VIOLATION: Threatening legal action that Chase
+does not intend to take, or has no authority to take at this stage, is
+a deceptive practice under FDCPA §807. Remove or qualify this language.]
+
+PAYMENT ARRANGEMENTS:
+  "We can set up a payment plan today. What amount can you commit to
+  paying over the next 30 days?"
+
+CONTACT HOURS NOTE [COMPLIANCE FLAG]:
+  This script does not restrict agents from calling before 8 AM or
+  after 9 PM local time. FDCPA §805(a)(1) prohibits contact at
+  inconvenient times, which are presumed to be before 8 AM and after
+  9 PM. Add explicit guidance.
+
+HARDSHIP / SETTLEMENT:
+  "If you are unable to pay the full balance, we may be able to discuss
+  settlement options. Settlements may have tax implications — we recommend
+  you consult a tax advisor."
+
+DISPUTE PROCESS:
+  "If you believe this debt is in error, you have the right to dispute
+  it in writing within 30 days of this notice. If you dispute the debt
+  in writing, we will cease collection activity until we mail verification
+  of the debt."
+
+SERVICEMEMBER INQUIRY:
+  "Are you currently on active military duty? If so, you may be entitled
+  to certain protections under the Servicemembers Civil Relief Act,
+  including a reduced interest rate of 6% on balances that existed
+  before your service began."
+
+CLOSING:
+  "Is there anything else I can help you with today? Thank you for your
+  time and please contact us at 1-800-432-3117 to make a payment or
+  discuss options."
