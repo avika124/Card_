@@ -1,123 +1,131 @@
-# Credit Card Compliance Checker Agent
+# Credit Card Compliance Platform v4
 
-An AI-powered compliance checking agent that analyzes documents, images, and text against major credit card regulations and policies using the Anthropic Claude API.
-
-## Regulations Covered
-
-| Framework | Description |
-|-----------|-------------|
-| UDAAP | Unfair, Deceptive, or Abusive Acts or Practices |
-| TILA / Reg Z / CARD Act | Truth in Lending Act |
-| ECOA / Reg B | Equal Credit Opportunity Act |
-| FCRA / Reg V | Fair Credit Reporting Act |
-| BSA / AML / OFAC / CIP | Bank Secrecy Act / Anti-Money Laundering |
-| PCI DSS | Payment Card Industry Data Security Standard |
-| SCRA | Servicemembers Civil Relief Act |
-| Collections Conduct | FDCPA / Collection Practices |
-| SR 11-7 | Model Risk Management |
+A full production compliance platform for credit card teams — AI-powered document analysis, review workflow, company memory conflict detection, regulatory change monitoring, analytics, and audit trail.
 
 ## Features
 
-- **Document Upload** — PDF, DOCX, TXT analysis
-- **Image Upload** — Claude reads text from scanned documents/images
-- **Text Paste** — Direct text input for quick checks
-- **Multi-regulation** — Check against any combination of 9 frameworks
-- **Color-coded DOCX Output** — Generates corrected Word document with tracked changes:
-  - 🟡 Yellow = Corrected/Changed
-  - 🔴 Red strikethrough = Deleted
-  - 🟢 Green = Added
-  - ⬜ Gray = Unchanged
-- **Severity Scoring** — High / Medium / Low / Pass per regulation
-- **Remediation Phases** — Prioritized action plan (30 / 90 / 180 days)
-
-## Available Implementations
-
-| Folder | Stack | Best For |
-|--------|-------|----------|
-| `streamlit/` | Python + Streamlit | Quick internal tool, fastest to deploy |
-| `python-fastapi/` | Python + FastAPI | REST API backend, production-grade |
-| `nodejs-express/` | Node.js + Express | JavaScript teams, existing Node infra |
-| `scripts/` | Python scripts | CLI usage, batch processing, automation |
+| Feature | Description |
+|---------|-------------|
+| 🔐 Multi-user auth | Role-based access: Admin, Compliance Officer, Legal, Submitter |
+| 📋 Review workflow | Submit → Pending → Review → Approved/Rejected/Escalated |
+| 🏢 Company Memory | Upload prior marketing/policies, auto-check for contradictions |
+| 🧠 RAG Engine | Claude cites specific CFR sections using retrieved regulation text |
+| 🛰️ Reg Monitor | Watches CFPB, Fed, FFIEC, OCC for regulatory changes — auto-alerts |
+| 🔔 Notifications | In-app + Slack + Email alerts for reviews, decisions, reg changes |
+| 📈 Analytics | Risk breakdown, top issues, submission trends, export reports |
+| 📜 Audit Log | Every action logged with user, timestamp, and detail |
+| ⚖️ 9 Regulations | UDAAP, TILA/Reg Z, ECOA/Reg B, FCRA, BSA/AML, PCI DSS, SCRA, Collections, SR 11-7 |
+| 📥 Export | Color-coded DOCX reports, JSON findings, batch processing |
 
 ## Quick Start
 
-### Streamlit (Recommended for first run)
 ```bash
-cd streamlit
+# 1. Install dependencies
 pip install -r requirements.txt
-cp .env.example .env   # Add your ANTHROPIC_API_KEY
-streamlit run app.py
-```
 
-### FastAPI
-```bash
-cd python-fastapi
-pip install -r requirements.txt
+# 2. Set your API key
 cp .env.example .env
-uvicorn main:app --reload
-# API docs at http://localhost:8000/docs
+# Edit .env — add your ANTHROPIC_API_KEY
+
+# 3. Run the platform
+streamlit run ui/app.py
 ```
 
-### Node.js / Express
-```bash
-cd nodejs-express
-npm install
-cp .env.example .env
-node server.js
-# Server at http://localhost:3000
-```
+Open http://localhost:8501
 
-### CLI Scripts
-```bash
-cd scripts
-pip install -r requirements.txt
-cp .env.example .env
-python check.py --file path/to/document.pdf --regs udaap tila ecoa
-python check.py --text "Your policy text here" --all
-python generate_docx.py --findings findings.json --output corrected.docx
-```
+**Demo login credentials (all passwords: password123):**
+- admin@company.com — Admin (all access)
+- compliance@company.com — Compliance Officer (review queue, decisions)
+- legal@company.com — Legal Counsel (review, escalate)
+- marketing@company.com — Submitter (submit docs, view own)
 
-## Environment Variables
+## First Run Checklist
 
-```env
-ANTHROPIC_API_KEY=sk-ant-...
-MODEL=claude-sonnet-4-20250514
-MAX_TOKENS=4000
-```
+1. Sign in as `compliance@company.com`
+2. Go to **Train Regulations** → click the one-click preset buttons to load CFPB/Fed regulation text
+3. Go to **Company Memory** → click "Bulk load Chase sample documents" to seed prior communications
+4. Go to **Reg Monitor** → click "Load all default sources" → "Run Check Now"
+5. Sign in as `marketing@company.com` → **Submit Document** → paste any marketing copy
+
+## User Roles
+
+| Role | Submit | Review Queue | Make Decisions | Analytics | Settings |
+|------|--------|-------------|----------------|-----------|----------|
+| Admin | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Compliance | ✅ | ✅ | ✅ | ✅ | — |
+| Legal | ✅ | ✅ | ✅ | ✅ | — |
+| Submitter | ✅ | — | — | — | — |
 
 ## Project Structure
 
 ```
 compliance-agent/
-├── README.md
-├── .env.example
-├── streamlit/
-│   ├── app.py              # Main Streamlit app
-│   ├── compliance.py       # Compliance checking logic
-│   ├── docx_generator.py   # Color-coded DOCX generation
-│   └── requirements.txt
-├── python-fastapi/
-│   ├── main.py             # FastAPI app + routes
-│   ├── models.py           # Pydantic models
-│   ├── compliance.py       # Compliance checking logic
-│   ├── docx_generator.py   # DOCX generation
-│   └── requirements.txt
-├── nodejs-express/
-│   ├── server.js           # Express server
-│   ├── routes/
-│   │   ├── check.js        # Compliance check route
-│   │   └── docx.js         # DOCX generation route
-│   ├── lib/
-│   │   ├── compliance.js   # Claude API calls
-│   │   └── docxGenerator.js
-│   └── package.json
-└── scripts/
-    ├── check.py            # CLI compliance checker
-    ├── generate_docx.py    # CLI DOCX generator
-    ├── batch_check.py      # Batch processing
-    └── requirements.txt
+├── ui/app.py                    # Main Streamlit platform (9 pages)
+├── core/
+│   └── database.py              # SQLite: users, submissions, findings, reviews, audit
+├── rag/
+│   ├── knowledge_base.py        # ChromaDB regulatory knowledge base
+│   ├── rag_compliance.py        # Claude + RAG compliance checker
+│   ├── company_memory.py        # Prior communications store
+│   └── conflict_detector.py     # Contradiction detection engine
+├── monitor/
+│   └── reg_monitor.py           # Regulatory change monitor (daemon/CLI)
+├── integrations/
+│   └── notifier.py              # Slack + Email notification dispatcher
+├── python-fastapi/              # REST API (all endpoints)
+├── nodejs-express/              # Node.js equivalent
+├── scripts/                     # CLI tools
+├── test-docs/                   # Chase-style test documents
+├── requirements.txt
+└── .env.example
+```
+
+## Regulatory Monitor (Background Daemon)
+
+```bash
+# Seed default watches for your company
+python -m monitor.reg_monitor --seed "Acme Financial"
+
+# Run one check cycle
+python -m monitor.reg_monitor --run-once
+
+# Run as daemon (checks every 24h)
+python -m monitor.reg_monitor --daemon --interval 24
+```
+
+## REST API
+
+```bash
+# Start the API
+cd python-fastapi && uvicorn main:app --reload
+# Docs at http://localhost:8000/docs
+
+# Key endpoints:
+POST /check/text          # Check text
+POST /check/file          # Check uploaded file
+POST /check/full          # Check + conflict detection in one call
+POST /kb/ingest/url       # Add regulation from URL
+POST /memory/add/file     # Add to company memory
+GET  /memory/stats        # Company memory stats
+DELETE /memory/document/{name}
+```
+
+## Notification Setup
+
+### Slack
+1. Create an incoming webhook at api.slack.com/apps
+2. Add `SLACK_WEBHOOK_URL` to `.env`
+3. Go to Settings → Notifications → Test Slack
+
+### Email
+Add to `.env`:
+```
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your@gmail.com
+SMTP_PASSWORD=your-app-password
+FROM_EMAIL=compliance@company.com
 ```
 
 ## License
-
 MIT
