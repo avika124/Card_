@@ -111,3 +111,70 @@ def kb_delete(source_name: str):
 @app.get("/kb/retrieve")
 def kb_retrieve(q: str, regulation: Optional[str]=None, top_k: int=5):
     return {"query":q,"results":get_checker().kb.retrieve(q, regulation=regulation, top_k=top_k)}
+
+# ── Company Memory endpoints ──────────────────────────────────────────────────
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).parent.parent))
+from rag.company_memory import CompanyMemory, DOC_TYPES
+
+def get_memory():
+    return get_checker().memory
+
+@app.get("/memory/doc-types")
+def memory_doc_types(): return {"doc_types": DOC_TYPES}
+
+@app.post("/memory/add/text")
+async def mem_add_text(
+    text: str=Form(...), source: str=Form(...),
+    doc_type: str=Form("marketing"), product: str=Form("general"),
+    date: str=Form(""), version: str=Form(""), tags: str=Form(""),
+):
+    try:
+        checker=get_checker()
+        n=checker.add_company_document(text,source=source,doc_type=doc_type,product=product,date=date,version=version,tags=tags)
+        return {"status":"ok","chunks_added":n,"source":source}
+    except Exception as e: raise HTTPException(500,str(e))
+
+@app.post("/memory/add/file")
+async def mem_add_file(
+    file: UploadFile=File(...), source: Optional[str]=Form(None),
+    doc_type: str=Form("marketing"), product: str=Form("general"),
+    date: str=Form(""), version: str=Form(""),
+):
+    suf=Path(file.filename or "upload").suffix.lower()
+    with tempfile.NamedTemporaryFile(suffix=suf,delete=False) as tmp:
+        tmp.write(await file.read()); tp=tmp.name
+    try:
+        checker=get_checker()
+        src=source or Path(file.filename or "upload").stem
+        n=checker.add_company_file(tp,doc_type=doc_type,source=src,product=product,date=date,version=version)
+        return {"status":"ok","chunks_added":n,"source":src}
+    except Exception as e: raise HTTPException(500,str(e))
+    finally: os.unlink(tp)
+
+@app.get("/memory/stats")
+def mem_stats(): return get_checker().memory_stats()
+
+@app.get("/memory/documents")
+def mem_docs(doc_type: Optional[str]=None): return {"documents":get_checker().memory_documents(doc_type)}
+
+@app.delete("/memory/document/{source_name}")
+def mem_delete(source_name: str):
+    n=get_checker().delete_company_document(source_name)
+    return {"status":"deleted","chunks_removed":n}
+
+@app.post("/check/full")
+async def check_full(
+    file: UploadFile=File(...), regulations: str=Form(...),
+    product: Optional[str]=Form(None), run_conflict_check: bool=Form(True),
+):
+    """Full check: regulations + company memory conflict detection."""
+    reg_ids=[r.strip() for r in regulations.split(",") if r.strip()]
+    suf=Path(file.filename or "upload").suffix.lower()
+    with tempfile.NamedTemporaryFile(suffix=suf,delete=False) as tmp:
+        tmp.write(await file.read()); tp=tmp.name
+    try:
+        result=get_checker().check_file(tp,reg_ids,product=product,run_conflict_check=run_conflict_check)
+        return JSONResponse(content=result)
+    finally: os.unlink(tp)
