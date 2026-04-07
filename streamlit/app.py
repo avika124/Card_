@@ -36,8 +36,8 @@ def get_checker(key, company):
 with st.sidebar:
     st.title("⚖️ Compliance Checker")
     st.caption("Regulations + Company Memory · Anthropic Claude")
-    api_key = st.text_input("ANTHROPIC_API_KEY", type="password", value=os.environ.get("ANTHROPIC_API_KEY",""))
-    company_name = st.text_input("Company name", value="My Company", help="Used to label your prior communications store")
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    company_name = st.text_input("Company name", value="Prama Capital Partners", help="Used to label your prior communications store")
     st.divider()
     st.subheader("📋 Regulations")
     sel_all = st.checkbox("Select all", value=True)
@@ -62,7 +62,7 @@ with st.sidebar:
         except Exception as e: st.warning(str(e))
 
 # ── Tabs ───────────────────────────────────────────────────────────────────────
-t1,t2,t3,t4,t5 = st.tabs(["🔍 Check Document","🏢 Company Memory","📚 Train Regulations","🗂️ Knowledge Base","⚡ Batch Check"])
+t1,t2,t3,t4,t5,t6 = st.tabs(["🔍 Check Document","🏢 Company Memory","📚 Train Regulations","🗂️ Knowledge Base","⚡ Batch Check","🏛️ About Prama Capital"])
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ TAB 1: CHECK ━━━━━━━━━━━━━━━━━━━━━━━━━━
 with t1:
@@ -447,3 +447,46 @@ with t5:
                             st.warning(f"🏢 **Conflicts with prior communications:** {cc.get('summary','')}")
             summary=[{"file":r["file"],"overall_risk":r.get("result",{}).get("overall_risk","error"),"conflict_risk":r.get("result",{}).get("conflict_risk","none"),"conflicts_found":len(r.get("result",{}).get("conflict_check",{}).get("conflicts",[])),"summary":r.get("result",{}).get("summary",r.get("error",""))} for r in results]
             st.download_button("⬇️ batch_summary.json",data=json.dumps(summary,indent=2),file_name="batch_summary.json",mime="application/json")
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ TAB 6: ABOUT PRAMA CAPITAL ━━━━━━━━━━━━━
+with t6:
+    st.header("🏛️ About Prama Capital Partners")
+    st.caption("Boutique advisory firm powering this compliance platform — lending strategy, risk analytics & AI")
+
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        st.markdown("""
+        ### Building the Future of Lending — One Smart Decision at a Time.
+
+        **Prama Capital Partners** is a boutique advisory and investment firm specializing in
+        lending sector growth strategy. We bring senior-level expertise across risk, data, AI,
+        and capital strategy to help financial institutions scale responsibly.
+        """)
+    with col2:
+        st.markdown("""
+        **Contact**
+        📧 khemuka@gmail.com
+        📍 Austin, Texas (global clients)
+        🔗 [linkedin.com/in/atul-khemuka](https://linkedin.com/in/atul-khemuka)
+        """)
+
+    st.divider()
+
+    c1, c2, c3, c4 = st.columns(4)
+    c1.markdown("### 💼\n**Lending Growth & Capital Strategy**\nMarket expansion, customer acquisition, revenue modeling")
+    c2.markdown("### 📊\n**Risk, Data & Analytics**\nCredit frameworks, portfolio analysis, governance structures")
+    c3.markdown("### 🤖\n**Predictive Modeling & AI**\nMachine learning, fraud detection, behavioral scoring")
+    c4.markdown("### 👔\n**Fractional C-Suite Leadership**\nOn-demand senior advisory roles")
+
+    st.divider()
+    st.subheader("👤 Founder — Atul Khemuka")
+    st.markdown("""
+    **20+ years** in credit and growth transformations. Previously served as **Chief Intelligence Officer**
+    and **Chief Growth Officer** at Mercury Financial, helping scale the platform to over **2 million customers**.
+    """)
+
+    st.divider()
+    st.subheader("🌐 Full Website")
+    st.markdown("View the complete Prama Capital Partners website below:")
+    import streamlit.components.v1 as components
+    components.iframe("https://pramacapitalpartners.in/", height=700, scrolling=True)
