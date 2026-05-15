@@ -129,3 +129,11 @@ FROM_EMAIL=compliance@company.com
 
 ## License
 MIT
+
+## Web App (Standalone)
+
+The `webapp/` folder contains a fully self-contained browser-based version of the platform.
+No Python or server required for basic use — open `webapp/ComplyLine_v4.html` in Chrome
+with the CORS extension, or run `node webapp/server.js` for the full experience.
+
+See [`webapp/README.md`](webapp/README.md) for setup instructions.

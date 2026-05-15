@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 80" width="420" height="80">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;family=DM+Sans:wght@400;500&amp;display=swap');
+    </style>
+  </defs>
+
+  <!-- MARK: geometric balance scale built from precise lines -->
+  <!-- Outer shield/frame -->
+  <path d="M10 12 L10 52 Q10 68 26 72 L40 76 L54 72 Q70 68 70 52 L70 12 Z"
+        fill="#1C2D4F" stroke="none"/>
+  <!-- Inner teal accent shape -->
+  <path d="M10 12 L10 30 L40 14 L70 30 L70 12 Z"
+        fill="#2A9D8F" opacity="0.9"/>
+
+  <!-- Scale beam — horizontal bar -->
+  <line x1="22" y1="38" x2="58" y2="38" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- Center post -->
+  <line x1="40" y1="22" x2="40" y2="55" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- Top pivot circle -->
+  <circle cx="40" cy="22" r="2.5" fill="#E9C46A"/>
+
+  <!-- Left pan chain -->
+  <line x1="22" y1="38" x2="22" y2="47" stroke="#D6E4F7" stroke-width="1.3" stroke-linecap="round"/>
+  <!-- Left pan -->
+  <path d="M15 47 Q22 44 29 47" stroke="#D6E4F7" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Right pan chain -->
+  <line x1="58" y1="38" x2="58" y2="47" stroke="#D6E4F7" stroke-width="1.3" stroke-linecap="round"/>
+  <!-- Right pan -->
+  <path d="M51 47 Q58 44 65 47" stroke="#D6E4F7" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Circuit dots on beam — data/tech motif -->
+  <circle cx="28" cy="38" r="2" fill="#2A9D8F"/>
+  <circle cx="34" cy="38" r="1.4" fill="#2A9D8F" opacity="0.6"/>
+  <circle cx="46" cy="38" r="1.4" fill="#2A9D8F" opacity="0.6"/>
+  <circle cx="52" cy="38" r="2" fill="#2A9D8F"/>
+
+  <!-- Small data squares on pans -->
+  <rect x="19" y="49" width="3.5" height="3.5" rx="0.5" fill="#E9C46A"/>
+  <rect x="23.5" y="49" width="3.5" height="3.5" rx="0.5" fill="#2A9D8F"/>
+  <rect x="55" y="49" width="3.5" height="3.5" rx="0.5" fill="#2A9D8F"/>
+  <rect x="59.5" y="49" width="3.5" height="3.5" rx="0.5" fill="#E9C46A"/>
+
+  <!-- WORDMARK -->
+  <!-- "Comply" in serif -->
+  <text x="84" y="43"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="28" font-weight="700"
+        fill="#1C2D4F" letter-spacing="-0.5">Comply</text>
+  <!-- "Line" in geometric sans with teal accent -->
+  <text x="196" y="43"
+        font-family="'Trebuchet MS', sans-serif"
+        font-size="28" font-weight="400"
+        fill="#2A9D8F" letter-spacing="-0.3">Line</text>
+
+  <!-- Tagline -->
+  <text x="84" y="58"
+        font-family="'Trebuchet MS', sans-serif"
+        font-size="9.5" font-weight="400"
+        fill="#6B7280" letter-spacing="1.8">CREDIT CARD COMPLIANCE PLATFORM</text>
+</svg>
