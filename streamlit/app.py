@@ -192,15 +192,27 @@ def render_sidebar():
 
         st.divider()
         env_key = os.environ.get("ANTHROPIC_API_KEY", "")
-        st.text_input(
-            "API Key",
-            type="password",
-            value=env_key,
-            key="sidebar_key",
-            help="Your Anthropic API key",
-        )
         if env_key:
-            st.markdown('<div style="font-size:11px;color:#4CAF50;">✅ Key loaded from secrets</div>', unsafe_allow_html=True)
+            # Key loaded from Streamlit secrets — don't show input field
+            st.markdown(
+                '<div style="font-size:11px;color:#4CAF50;padding:4px 0;">✅ API key configured</div>',
+                unsafe_allow_html=True
+            )
+            # Store silently in session state
+            st.session_state["sidebar_key"] = env_key
+        else:
+            # No secret set — show input so user can paste key manually
+            st.text_input(
+                "API Key",
+                type="password",
+                placeholder="sk-ant-...",
+                key="sidebar_key",
+                help="Paste your Anthropic API key",
+            )
+            st.markdown(
+                '<div style="font-size:10px;color:rgba(255,255,255,0.4);">Add to Streamlit Secrets for production</div>',
+                unsafe_allow_html=True
+            )
 
         if st.button("🚪 Sign Out", use_container_width=True):
             if HAS_DB:
