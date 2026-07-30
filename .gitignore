@@ -1,0 +1,25 @@
+# Secrets
+.env
+.env.local
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Runtime data (SQLite DB, vector/knowledge-base stores)
+data/
+rag/company_db/
+rag/json_db/
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# Editor / OS
+.DS_Store
+
+# Claude Code local tooling config
+.claude/

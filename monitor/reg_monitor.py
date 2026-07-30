@@ -17,6 +17,7 @@ import argparse
 import time
 from pathlib import Path
 from datetime import datetime
+from typing import Optional
 
 import requests
 from bs4 import BeautifulSoup
@@ -176,9 +177,6 @@ def run_daemon(interval_hours: int = 24):
         print(f"Next check in {interval_hours} hours…")
         time.sleep(interval_hours * 3600)
 
-
-# Allow Optional import
-from typing import Optional
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Regulatory Change Monitor")

@@ -1,180 +1,66 @@
-"""python-fastapi/main.py — RAG-Enhanced FastAPI Compliance Checker Agent v2.0"""
-import os, json, sys, tempfile
+"""
+python_fastapi/main.py — ComplyLine REST API
+
+Full authenticated backend for the Credit Card Compliance Platform:
+auth/sessions, submissions & review workflow, company memory, regulatory
+knowledge base training, regulatory change monitoring, analytics, audit log.
+
+Run:
+  uvicorn python_fastapi.main:app --reload --port 8000
+Docs at http://localhost:8000/docs
+"""
+import os
+import sys
 from pathlib import Path
-from typing import Optional
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException
+
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse, JSONResponse
-import io
 from dotenv import load_dotenv
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from rag.rag_compliance import RAGComplianceChecker, REGULATIONS
-from python_fastapi.docx_generator import generate_compliance_docx
-from python_fastapi.models import ComplianceRequest, ComplianceResponse
-load_dotenv()
+ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(ROOT))
+load_dotenv(ROOT / ".env")
 
-app = FastAPI(title="Credit Card Compliance Checker (RAG)", version="2.0.0")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+from core.database import init_db
+from python_fastapi.routers import (
+    auth as auth_router,
+    submissions as submissions_router,
+    memory as memory_router,
+    kb as kb_router,
+    reg_monitor as reg_monitor_router,
+    analytics as analytics_router,
+    notifications as notifications_router,
+    audit as audit_router,
+    settings as settings_router,
+)
 
-def get_checker(): return RAGComplianceChecker(use_rag=True)
+app = FastAPI(title="ComplyLine Compliance Platform API", version="1.0.0")
+
+_origins = os.environ.get("FRONTEND_ORIGIN", "http://localhost:5173").split(",")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.on_event("startup")
+def _startup():
+    init_db()
+
 
 @app.get("/")
-def root(): return {"version":"2.0.0","rag_enabled":True,"endpoints":["POST /check/text","POST /check/file","POST /check/image","POST /check/export","POST /docx","GET /kb/stats","GET /kb/sources","POST /kb/ingest/text","POST /kb/ingest/file","POST /kb/ingest/url","DELETE /kb/source/{name}","GET /kb/retrieve"]}
+def root():
+    return {"name": "ComplyLine API", "version": "1.0.0", "docs": "/docs"}
 
-@app.get("/regulations")
-def list_regs(): return {"regulations": REGULATIONS}
 
-@app.post("/check/text")
-async def check_text_ep(request: ComplianceRequest):
-    try: return get_checker().check_text(request.text, request.regulations)
-    except Exception as e: raise HTTPException(500, str(e))
-
-@app.post("/check/file")
-async def check_file_ep(file: UploadFile=File(...), regulations: str=Form(...)):
-    reg_ids = [r.strip() for r in regulations.split(",") if r.strip()]
-    suffix = Path(file.filename or "upload").suffix.lower()
-    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
-        tmp.write(await file.read()); tp=tmp.name
-    try: return JSONResponse(get_checker().check_file(tp, reg_ids))
-    except Exception as e: raise HTTPException(500, str(e))
-    finally: os.unlink(tp)
-
-@app.post("/check/image")
-async def check_image_ep(file: UploadFile=File(...), regulations: str=Form(...)):
-    reg_ids = [r.strip() for r in regulations.split(",") if r.strip()]
-    img = await file.read()
-    try: return JSONResponse(get_checker().check_image(img, file.content_type or "image/png", reg_ids))
-    except Exception as e: raise HTTPException(500, str(e))
-
-@app.post("/check/export")
-async def check_export(file: UploadFile=File(...), regulations: str=Form(...)):
-    reg_ids = [r.strip() for r in regulations.split(",") if r.strip()]
-    suf = Path(file.filename or "upload").suffix.lower()
-    with tempfile.NamedTemporaryFile(suffix=suf, delete=False) as tmp:
-        tmp.write(await file.read()); tp=tmp.name
-    try:
-        result = get_checker().check_file(tp, reg_ids)
-        docx = generate_compliance_docx(result, document_name=file.filename or "Document")
-        return StreamingResponse(io.BytesIO(docx), media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document", headers={"Content-Disposition":'attachment; filename="compliance_report.docx"'})
-    finally: os.unlink(tp)
-
-@app.post("/docx")
-async def gen_docx(findings: str=Form(...), document_name: Optional[str]=Form("Document"), original_excerpt: Optional[str]=Form("")):
-    try: fd = json.loads(findings)
-    except: raise HTTPException(400,"Invalid JSON")
-    docx = generate_compliance_docx(fd, document_name=document_name, original_text_excerpt=original_excerpt or "")
-    return StreamingResponse(io.BytesIO(docx), media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document", headers={"Content-Disposition":'attachment; filename="compliance_report.docx"'})
-
-@app.post("/kb/ingest/text")
-async def kb_text(text: str=Form(...), source: str=Form(...), regulation: str=Form("general"), doc_type: str=Form("regulation")):
-    try: n=get_checker().ingest_text(text,source=source,regulation=regulation,doc_type=doc_type); return {"status":"ok","chunks_added":n}
-    except Exception as e: raise HTTPException(500,str(e))
-
-@app.post("/kb/ingest/file")
-async def kb_file(file: UploadFile=File(...), source: Optional[str]=Form(None), regulation: str=Form("general"), doc_type: str=Form("regulation")):
-    suf=Path(file.filename or "upload").suffix.lower()
-    with tempfile.NamedTemporaryFile(suffix=suf, delete=False) as tmp:
-        tmp.write(await file.read()); tp=tmp.name
-    try:
-        src=source or Path(file.filename or "upload").stem
-        n=get_checker().ingest_file(tp, regulation=regulation, doc_type=doc_type, source=src)
-        return {"status":"ok","chunks_added":n,"source":src}
-    except Exception as e: raise HTTPException(500,str(e))
-    finally: os.unlink(tp)
-
-@app.post("/kb/ingest/url")
-async def kb_url(url: str=Form(...), source: str=Form(...), regulation: str=Form("general"), doc_type: str=Form("regulation")):
-    try:
-        import requests; from bs4 import BeautifulSoup
-        resp=requests.get(url, headers={"User-Agent":"Mozilla/5.0"}, timeout=20); resp.raise_for_status()
-        soup=BeautifulSoup(resp.text,"html.parser")
-        for tag in soup.find_all(["script","style","nav","footer"]): tag.decompose()
-        text=(soup.find("main") or soup.body or soup).get_text(separator="\n", strip=True)
-        if len(text)<100: raise HTTPException(422,"Too little text from URL")
-        n=get_checker().ingest_text(text, source=source, regulation=regulation, doc_type=doc_type)
-        return {"status":"ok","chunks_added":n,"chars_fetched":len(text)}
-    except HTTPException: raise
-    except Exception as e: raise HTTPException(500,str(e))
-
-@app.get("/kb/stats")
-def kb_stats(): return get_checker().kb_stats()
-
-@app.get("/kb/sources")
-def kb_sources(): return {"sources": get_checker().kb_sources()}
-
-@app.delete("/kb/source/{source_name}")
-def kb_delete(source_name: str):
-    n=get_checker().kb.delete_source(source_name)
-    return {"status":"deleted","chunks_removed":n}
-
-@app.get("/kb/retrieve")
-def kb_retrieve(q: str, regulation: Optional[str]=None, top_k: int=5):
-    return {"query":q,"results":get_checker().kb.retrieve(q, regulation=regulation, top_k=top_k)}
-
-# ── Company Memory endpoints ──────────────────────────────────────────────────
-import sys as _sys
-from pathlib import Path as _Path
-_sys.path.insert(0, str(_Path(__file__).parent.parent))
-from rag.company_memory import CompanyMemory, DOC_TYPES
-
-def get_memory():
-    return get_checker().memory
-
-@app.get("/memory/doc-types")
-def memory_doc_types(): return {"doc_types": DOC_TYPES}
-
-@app.post("/memory/add/text")
-async def mem_add_text(
-    text: str=Form(...), source: str=Form(...),
-    doc_type: str=Form("marketing"), product: str=Form("general"),
-    date: str=Form(""), version: str=Form(""), tags: str=Form(""),
-):
-    try:
-        checker=get_checker()
-        n=checker.add_company_document(text,source=source,doc_type=doc_type,product=product,date=date,version=version,tags=tags)
-        return {"status":"ok","chunks_added":n,"source":source}
-    except Exception as e: raise HTTPException(500,str(e))
-
-@app.post("/memory/add/file")
-async def mem_add_file(
-    file: UploadFile=File(...), source: Optional[str]=Form(None),
-    doc_type: str=Form("marketing"), product: str=Form("general"),
-    date: str=Form(""), version: str=Form(""),
-):
-    suf=Path(file.filename or "upload").suffix.lower()
-    with tempfile.NamedTemporaryFile(suffix=suf,delete=False) as tmp:
-        tmp.write(await file.read()); tp=tmp.name
-    try:
-        checker=get_checker()
-        src=source or Path(file.filename or "upload").stem
-        n=checker.add_company_file(tp,doc_type=doc_type,source=src,product=product,date=date,version=version)
-        return {"status":"ok","chunks_added":n,"source":src}
-    except Exception as e: raise HTTPException(500,str(e))
-    finally: os.unlink(tp)
-
-@app.get("/memory/stats")
-def mem_stats(): return get_checker().memory_stats()
-
-@app.get("/memory/documents")
-def mem_docs(doc_type: Optional[str]=None): return {"documents":get_checker().memory_documents(doc_type)}
-
-@app.delete("/memory/document/{source_name}")
-def mem_delete(source_name: str):
-    n=get_checker().delete_company_document(source_name)
-    return {"status":"deleted","chunks_removed":n}
-
-@app.post("/check/full")
-async def check_full(
-    file: UploadFile=File(...), regulations: str=Form(...),
-    product: Optional[str]=Form(None), run_conflict_check: bool=Form(True),
-):
-    """Full check: regulations + company memory conflict detection."""
-    reg_ids=[r.strip() for r in regulations.split(",") if r.strip()]
-    suf=Path(file.filename or "upload").suffix.lower()
-    with tempfile.NamedTemporaryFile(suffix=suf,delete=False) as tmp:
-        tmp.write(await file.read()); tp=tmp.name
-    try:
-        result=get_checker().check_file(tp,reg_ids,product=product,run_conflict_check=run_conflict_check)
-        return JSONResponse(content=result)
-    finally: os.unlink(tp)
+app.include_router(auth_router.router)
+app.include_router(submissions_router.router)
+app.include_router(memory_router.router)
+app.include_router(kb_router.router)
+app.include_router(reg_monitor_router.router)
+app.include_router(analytics_router.router)
+app.include_router(notifications_router.router)
+app.include_router(audit_router.router)
+app.include_router(settings_router.router)
