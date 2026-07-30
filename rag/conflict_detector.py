@@ -76,7 +76,7 @@ class ConflictDetector:
         self.client = anthropic.Anthropic(
             api_key=api_key or os.environ["ANTHROPIC_API_KEY"]
         )
-        self.model = model or os.environ.get("MODEL", "claude-sonnet-4-20250514")
+        self.model = model or os.environ.get("MODEL", "claude-sonnet-4-6")
         self.memory = company_memory or CompanyMemory(company_name=company_name)
         self.company_name = company_name
 

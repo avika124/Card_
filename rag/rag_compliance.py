@@ -46,11 +46,11 @@ def _regs(ids): return "\n".join(f"- {REGULATIONS[r]['label']}: {REGULATIONS[r][
 def _parse(raw): return json.loads(raw.replace("```json","").replace("```","").strip())
 
 class RAGComplianceChecker:
-    def __init__(self, api_key=None, model=None, max_tokens=4000, use_rag=True, rag_top_k=6, company_name="Company"):
+    def __init__(self, api_key=None, model=None, max_tokens=None, use_rag=True, rag_top_k=6, company_name="Company"):
         self.api_key = api_key or os.environ.get("ANTHROPIC_API_KEY","")
         self.client = anthropic.Anthropic(api_key=self.api_key)
-        self.model = model or os.environ.get("MODEL","claude-sonnet-4-20250514")
-        self.max_tokens = max_tokens
+        self.model = model or os.environ.get("MODEL","claude-sonnet-4-6")
+        self.max_tokens = max_tokens or int(os.environ.get("MAX_TOKENS", 4000))
         self.use_rag = use_rag
         self.rag_top_k = rag_top_k
         self.company_name = company_name
