@@ -14,7 +14,9 @@ services:
       - key: DATA_DIR
         value: /var/data
       - key: MODEL
-        value: claude-sonnet-4-20250514
+        value: claude-sonnet-4-6
+      - key: MAX_TOKENS
+        value: "8000"
     disk:
       name: complyline-data
       mountPath: /var/data
