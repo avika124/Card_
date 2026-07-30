@@ -95,7 +95,7 @@ export default function ReviewDetail() {
           {sortedFindings.map((f) => (
             <div className={`finding-row finding-${f.severity}`} style={f.is_false_positive ? { opacity: 0.4 } : {}} key={f.id}>
               <Badge status={f.severity} /> <strong>{f.regulation}</strong> · {f.issue}
-              {f.is_false_positive && <em style={{ color: "#999", fontSize: 11 }}> (false positive)</em>}
+              {!!f.is_false_positive && <em style={{ color: "#999", fontSize: 11 }}> (false positive)</em>}
               <div style={{ marginTop: 6 }}>{f.detail}</div>
               {f.regulatory_citation && <code style={{ display: "block", marginTop: 4 }}>{f.regulatory_citation}</code>}
               {f.excerpt && <div className="alert alert-info" style={{ marginTop: 6 }}>📌 "{f.excerpt}"</div>}
