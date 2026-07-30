@@ -13,6 +13,7 @@ Tables:
   analytics      - aggregated stats cache
 """
 
+import os
 import sqlite3
 import json
 import hashlib
@@ -22,7 +23,8 @@ from pathlib import Path
 from typing import Optional
 from contextlib import contextmanager
 
-DB_PATH = str(Path(__file__).parent.parent / "data" / "compliance.db")
+_DATA_DIR = Path(os.environ["DATA_DIR"]) if os.environ.get("DATA_DIR") else Path(__file__).parent.parent / "data"
+DB_PATH = str(_DATA_DIR / "compliance.db")
 
 
 def _now() -> str:

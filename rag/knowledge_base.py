@@ -26,7 +26,8 @@ from typing import Optional
 CHUNK_SIZE    = 800
 CHUNK_OVERLAP = 150
 TOP_K_DEFAULT = 5
-DB_PATH = str(Path(__file__).parent / "json_db")
+_DATA_DIR = Path(os.environ["DATA_DIR"]) if os.environ.get("DATA_DIR") else Path(__file__).parent
+DB_PATH = str(_DATA_DIR / "json_db")
 
 
 # ── Text chunking ──────────────────────────────────────────────────────────────

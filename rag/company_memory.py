@@ -14,7 +14,8 @@ from datetime import datetime
 # ── Constants ──────────────────────────────────────────────────────────────────
 CHUNK_SIZE    = 600
 CHUNK_OVERLAP = 120
-DB_PATH = str(Path(__file__).parent / "company_db")
+_DATA_DIR = Path(os.environ["DATA_DIR"]) if os.environ.get("DATA_DIR") else Path(__file__).parent
+DB_PATH = str(_DATA_DIR / "company_db")
 
 DOC_TYPES = {
     "marketing":   "Marketing Materials",
