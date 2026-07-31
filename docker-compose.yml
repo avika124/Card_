@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  complyline:
+    build: .
+    container_name: complyline
+    ports:
+      - "8501:8501"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./rag/company_db:/app/rag/company_db
+      - ./rag/kb_data:/app/rag/kb_data
+    restart: unless-stopped
