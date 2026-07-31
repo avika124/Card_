@@ -1,14 +1,16 @@
 version: '3.8'
 services:
-  complyline:
+  complyline-api:
     build: .
-    container_name: complyline
+    container_name: complyline-api
     ports:
-      - "8501:8501"
+      - "8000:8000"
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - SECRET_KEY=${SECRET_KEY}
+      - MODEL=${MODEL:-claude-sonnet-4-6}
+      - MAX_TOKENS=${MAX_TOKENS:-8000}
+      - FRONTEND_ORIGIN=${FRONTEND_ORIGIN:-http://localhost:5173}
     volumes:
-      - ./data:/app/data
-      - ./rag/company_db:/app/rag/company_db
-      - ./rag/kb_data:/app/rag/kb_data
+      - ./data:/var/data
     restart: unless-stopped
