@@ -1,0 +1,65 @@
+# render.yaml — full agent, always on
+#
+# Two services against one shared disk:
+#   complyline      the Streamlit UI (app.py)
+#   complyline-scan the daily scanner, on a cron schedule
+#
+# The disk is what makes the agent stateful. input/, regulatory_updates/,
+# scraping_info/, and alerts/ all live on it, so the scanner writes and the UI
+# reads the same files. Without it, every deploy wipes your scan history and the
+# consistency checker loses its reference corpus.
+
+services:
+  # ── Web UI ────────────────────────────────────────────────────────────────
+  - type: web
+    name: complyline
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter          # 512MB. Bump to standard if PyMuPDF OOMs on big PDFs.
+    healthCheckPath: /_stcore/health
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false        # set in the dashboard, never in this file
+      - key: DATA_DIR
+        value: /var/data
+      - key: MODEL
+        value: claude-sonnet-4-6
+      - key: MAX_TOKENS
+        value: "8000"
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    disk:
+      name: complyline-data
+      mountPath: /var/data
+      sizeGB: 5            # scan history and scraped pages accumulate
+
+# ── Daily regulatory scan ───────────────────────────────────────────────────
+# This is the piece that cannot run in a browser or a chat artifact: a process
+# that wakes on a schedule, hits nine regulator sites, diffs against the last
+# run, and writes alerts the next document review will read as context.
+  - type: cron
+    name: complyline-scan
+    env: docker
+    dockerfilePath: ./Dockerfile
+    schedule: "0 11 * * 1-5"   # 11:00 UTC weekdays — before US business hours
+    dockerCommand: python daily_scanner.py
+    plan: starter
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: DATA_DIR
+        value: /var/data
+      - key: SMTP_HOST
+        sync: false        # replaces the hardcoded placeholder credentials
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: ALERT_TO
+        sync: false
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    disk:
+      name: complyline-data     # same disk as the web service
+      mountPath: /var/data
+      sizeGB: 5

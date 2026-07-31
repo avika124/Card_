@@ -1,0 +1,21 @@
+# secrets
+.env
+.env.local
+*.key
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# agent runtime data
+regulatory_updates/
+scraping_info/
+alerts/
+output/
+*.db
+
+# os
+.DS_Store
+Thumbs.db
