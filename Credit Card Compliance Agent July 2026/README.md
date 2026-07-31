@@ -4,15 +4,27 @@ Everything produced in the July 2026 working session on the Credit Card
 Compliance Agent: two defect patches, a browser client, deployment scaffolding,
 desktop tooling, and the architecture and defect documentation.
 
-This folder does **not** contain the agent itself. The agent's eight Python
-modules live at
+---
+
+## Run the agent from this folder
+
+This folder ships with the tooling but not the agent's eight Python modules —
+those live in your existing folder and were never available to this session as
+source, only as compiled `.pyc`.
+
+**Double-click `setup_here.bat`.**
+
+It finds your existing agent folder, copies the modules across, brings over your
+reference documents and API key, places the patches where they need to be, and
+launches. Your original folder is not modified — it stays as a fallback.
+
+After that, this folder is the working agent and `run.bat` starts it.
 
 ```
-C:\Users\khemu\OneDrive\Documents\Claude\Projects\Credit Card Compliance Agent
+setup_here.bat     once, to populate this folder
+run.bat            every time after that
+schedule_scanner.bat   once, as administrator, for the daily scan
 ```
-
-and were never available to this session as source — only as compiled `.pyc`.
-Everything in `docs/` was reconstructed from bytecode.
 
 ---
 
@@ -33,8 +45,8 @@ written into a report field as though it were analysis.
 contributes nothing to reports. Findings that do appear come from the
 consistency checker alone.
 
-`patches/json_extract.py` fixes it. Two lines, two files. Do this before
-anything else.
+`patches/json_extract.py` fixes it. Two lines, two files. `setup_here.bat` puts
+the file in place and tells you if the edit is still outstanding.
 
 Full evidence in `docs/FINDINGS.md`.
 
@@ -82,21 +94,23 @@ Credit Card Compliance Agent July 2026/
 
 ## Order of work
 
-1. Copy `desktop\run.bat`, `desktop\schedule_scanner.bat`, and
-   `patches\json_extract.py` into the agent folder.
-2. Double-click `run.bat`. It selects a Python, builds a `.venv`, installs
-   dependencies, creates the data folders, prompts once for the API key, and
-   launches at `localhost:8501`.
-3. Apply the parse fix — `patches/INTEGRATION.md`, two lines in two files.
-4. Verify: run a document and confirm the report now has **Visual
+1. **`setup_here.bat`** — copies the agent modules, reference documents, and API
+   key into this folder, places the patches, and launches. Once only.
+2. **Apply the parse fix** — `patches/INTEGRATION.md`, two lines in two files.
+   `setup_here.bat` tells you whether this is still outstanding.
+3. **Verify** — run a document and confirm the report now has **Visual
    Verification**, **Operational Verification**, and **Checklist Review**
    sections. Those come only from the compliance engine.
-5. Right-click `schedule_scanner.bat` → Run as administrator, for the daily
-   regulatory scan.
+4. **Load reference documents** into `input\marketing_copy\` and
+   `input\policy_documents\` if `setup_here.bat` did not bring any across. The
+   consistency checker compares against these; with empty folders it finds
+   nothing and does not say why.
+5. **`schedule_scanner.bat`** as administrator, for the daily regulatory scan.
 6. Optionally apply `revenue_optimizer_patch.py`.
 7. Optionally deploy — `deploy/DEPLOY.md`.
 
-Stopping after step 4 gets you a working agent producing complete reports.
+Stopping after step 4 gets you a working agent producing complete reports with
+conflict detection.
 
 ---
 
