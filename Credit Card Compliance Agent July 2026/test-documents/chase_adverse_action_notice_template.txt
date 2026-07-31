@@ -1,0 +1,55 @@
+CHASE CREDIT CARD — ADVERSE ACTION NOTICE
+(Internal Template — For Testing Purposes)
+
+Date: [DATE]
+Applicant Name: [NAME]
+Application Reference: [REF#]
+
+Dear [NAME],
+
+Thank you for your recent application for the Chase Freedom Flex® Credit Card.
+After careful consideration, we are unable to approve your application at
+this time.
+
+REASONS FOR THIS DECISION:
+  1. Insufficient credit history
+  2. Too many requests for credit or opened accounts recently
+  3. Proportion of balances to credit limits on revolving accounts is
+     too high
+
+[MISSING: ECOA Required Statement]
+NOTE FOR COMPLIANCE REVIEW: This template is missing the required ECOA
+statement: "The Federal Equal Credit Opportunity Act prohibits creditors
+from discriminating against credit applicants on the basis of race, color,
+religion, national origin, sex, marital status, age (provided the applicant
+has the capacity to enter into a binding contract); because all or part of
+the applicant's income derives from any public assistance program; or
+because the applicant has in good faith exercised any right under the
+Consumer Credit Protection Act."
+
+YOUR RIGHT TO OBTAIN YOUR CREDIT REPORT:
+  Our decision was based in whole or in part on information obtained from
+  a consumer reporting agency. The consumer reporting agency did not make
+  this decision and is unable to explain why this decision was made.
+
+  Experian
+  P.O. Box 2002
+  Allen, TX 75013
+  1-888-397-3742
+  www.experian.com
+
+  You have the right to obtain a free copy of your credit report from
+  this agency if you request it within 30 days.
+
+[COMPLIANCE NOTE: FCRA §615 requires the notice to state the consumer
+has the right to a free report within 60 days, not 30 days as stated above.
+This is an error requiring correction.]
+
+You also have the right to dispute the accuracy or completeness of any
+information provided by the consumer reporting agency.
+
+If you have questions, please contact us at 1-800-432-3117.
+
+Sincerely,
+JPMorgan Chase Bank, N.A.
+Credit Decisions Department
