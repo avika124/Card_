@@ -15,7 +15,7 @@ export default function Submit() {
   const [text, setText] = useState("");
   const [file, setFile] = useState(null);
   const [selectedRegs, setSelectedRegs] = useState({});
-  const [runConflict, setRunConflict] = useState(true);
+  const [runConflict, setRunConflict] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
